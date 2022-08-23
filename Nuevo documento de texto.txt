@@ -1,0 +1,4 @@
+https://arjunphp.com/ajax-login-form-php-mysql-pdo/
+https://nic.ar/verificar-dominio
+https://www.w3schools.com/php/
+https://www.w3schools.com/xml/ajax_xmlhttprequest_send.asp

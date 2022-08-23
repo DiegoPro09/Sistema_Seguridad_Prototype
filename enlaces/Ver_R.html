@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<!--?php
+	include("../php/Conexion.php");
+
+	session_start();
+	$Varsesion = $_SESSION['Nombre'];
+
+	if($Varsesion == null || $Varsesion = ''){
+		header("location: ../index.php");
+		die();
+	}
+
+?-->
+<html>
+	<head>
+		<title>Ver Registros</title>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<link rel="stylesheet" type="text/css" href="../css/Estilo.css">
+		<link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<script src="https://kit.fontawesome.com/dc9a7933d9.js" crossorigin="anonymous"></script>
+		<script type="text/javascript"> 
+			function ConfirmDelete() {
+				var respuesta = confirm("Seguro que desea eliminar este campo?");
+				if (respuesta == true) {
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+		</script>
+	</head>
+	<body class="Fondo_Ver">
+
+		<!-- NAV BAR -->
+
+		<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark Menu_Top">
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" href="Ingresos.html">
+							<button type="button" class="btn btn-outline-light">
+								Volver atras
+							</button>
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="../Index.html">
+							<button type="button" class="btn btn-outline-light boton">
+								<i class="fa-solid fa-arrow-right-from-bracket"></i>
+							</button>
+						</a>
+					</li>
+					<!--li class="nav-item">
+						<div class="dropleft">
+							<button type="button" class="btn btn-outline-light dropdown-toggle" data-toggle="dropdown" >
+							</button>
+							<div class="dropdown-menu">
+								<a class="dropdown-item" href="../php/User.php">Modificar Usuario</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item" href="../php/Cerrar_Sesion.php">Cerrar Sesion</a>
+							</div>
+						</div>
+					</li-->
+				</ul>
+			</div>
+		</nav>
+
+		<!-- TERMINA NAV -->
+		<div style="padding-top: 100px">
+			<!-- BUSCADOR -->
+			
+			<div class="container" style="margin-bottom: 50px">
+				<h1 style="color: white;">BUSCAR</h1>
+				<div class="row">	
+					<div class="col-md-6">
+						<form action="Ingresos.html" method="GET">
+							<div class="form-row">
+								<div class="col-md-10">
+									<input class="form-control mr-sm-2" type="search" placeholder="Ingresar DNI" name="Busc" id="Busc" aria-label="Search">
+								</div>
+								<div class="col-md-2">
+									<button class="btn btn-success my-2 my-sm-0" type="submit">Buscar</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					
+				</div>
+			</div>
+
+			<!-- TERMINA BUSCADOR -->
+
+			<!-- EMPIEEZA TABLA CON LA MUESTRA DE DATOS -->
+			<div class="container">
+				<!--?php
+					$consul = "SELECT Ficha_N, Nombre, Apellido, DNI, Tipo, VencimientoDNI, Cert_Reincidencia,
+									Vencimiento_R, Cert_BuenaConducta, VencimientoCERT, Sector, Motivo, Hora_Ingreso,
+									Hora_Egreso, Fecha_Alta, Fecha_Baja, (vehiculo.Modelo), (vehiculo.dominio),
+									(Licencia_Conducir), (vehiculo.VencimientoLICENCIA),
+									(vehiculo.Seguro), (vehiculo.Poliza), (vehiculo.VencimientoSEGURO),
+									(vehiculo.Tipo_Vehiculo), (vehiculo.Opcion_V), (autorizacion.AutorizacionNRO),
+									(autorizacion.AutorizadoNombre), (autorizacion.AutorizadoDNI),
+									(autorizacion.Autorizado_Por), (autorizacion.Autorizado_Permanente),
+									(novedades.Tipo_N), (novedades.Causa), (novedades.Desde), (novedades.Hasta),
+									(novedades.Descripcion)
+								FROM ingreso_personas
+								INNER JOIN Vehiculo ON ingreso_personas.DNI = vehiculo.Dueno
+								INNER JOIN Autorizacion ON ingreso_personas.DNI = autorizacion.AutorizadoDNI
+								INNER JOIN Novedades ON ingreso_personas.DNI = novedades.Residente";
+					$consulta = mysqli_query($conn, $consul);
+
+					$consul2 = "SELECT IDregistro_historico, Ficha_N, Nombre, Apellido, DNI, Tipo, VencimientoDNI, Cert_Reincidencia,
+									Vencimiento_R, Cert_BuenaConducta, VencimientoCERT, Sector, Motivo, Hora_Ingreso,
+									Hora_Egreso, Fecha_Alta, Fecha_Baja, (vehiculo_historica.Modelo), (vehiculo_historica.dominio),
+									(Licencia_Conducir), (vehiculo_historica.VencimientoLICENCIA),
+									(vehiculo_historica.Seguro), (vehiculo_historica.Poliza), (vehiculo_historica.VencimientoSEGURO),
+									(vehiculo_historica.Tipo_Vehiculo), (vehiculo_historica.Opcion_V), (autorizacion_historica.AutorizacionNRO),
+									(autorizacion_historica.AutorizadoNombre), (autorizacion_historica.AutorizadoDNI),
+									(autorizacion_historica.Autorizado_Por), (autorizacion_historica.Autorizado_Permanente),
+									(novedades_historica.Tipo_N), (novedades_historica.Causa), (novedades_historica.Desde), (novedades_historica.Hasta),
+									(novedades_historica.Descripcion)
+								FROM registro_historico
+								INNER JOIN vehiculo_historica ON registro_historico.DNI = vehiculo_historica.Dueno
+								INNER JOIN autorizacion_historica ON registro_historico.DNI = autorizacion_historica.AutorizadoDNI
+								INNER JOIN novedades_historica ON registro_historico.DNI = novedades_historica.Residente";
+					$consulta2 = mysqli_query($conn, $consul2);
+					$row = $consulta2->fetch_assoc();
+
+				?-->
+				<table class="table table-dark">
+					<thead>
+						<th scope="col"> Ficha N° </th>
+						<th scope="col"> Nombre	  </th>
+						<th scope="col"> Apellido </th>
+						<th scope="col"> Tipo de documento </th>
+						<th scope="col"> Numero </th>
+						<th scope="col">
+							<a href="../enlaces/doc.pdf">
+								<button type="button" class="btn btn-primary">
+									Ver Todo
+								</button>
+							</a>
+						</th>
+					</thead>
+
+					<tbody>
+						<tr>
+							<td>1</td>
+							<td>Ismael</td>
+							<td>Garcia</td>
+							<td>DNI</td>
+							<td>35678124</td>
+							<td>
+								<a href="../enlaces/doc.pdf">
+									<button type="button" class="btn btn-primary">
+										Ver Mas
+									</button>
+								</a>
+								<a class="btn btn-success" href="../php/Update.html" name="Ver"> Modificar </a>
+								<a class="btn btn-danger" href="Ingresos.html" name="Ver" onclick="/*return ConfirmDelete*/"> Eliminar </a>
+							</td>
+						</tr>
+						<!--?php
+							$i = 1;
+							while ($fila = mysqli_fetch_array($consulta)) {
+							$i++;
+						?-->
+						<!--tr>
+							<td><?php echo $fila["Ficha_N"] ?></td>
+							<td><?php echo $fila["Nombre"] ?></td>
+							<td><?php echo $fila["Apellido"] ?></td>
+							<td><?php echo $fila["Tipo"] ?></td>
+							<td><?php echo $fila["DNI"] ?></td>
+							<td>
+								<a href="../php/Reporte.php?Ficha_id=<?php echo $fila["Ficha_N"]; ?>">
+									<button type="button" class="btn btn-primary">
+										Ver Mas
+									</button>
+								</a>
+								<a class="btn btn-success" href="../php/Update.php?Ficha_Id=<?php echo $fila["Ficha_N"]; ?>&id_Dni=<?php echo $fila["DNI"]; ?>" name="Ver"> Modificar </a>
+								<a class="btn btn-danger" href="../php/Delete.php?Dni_id=<?php echo $fila["DNI"]; ?>" name="Ver" onclick="return ConfirmDelete()"> Eliminar </a>
+							</td>
+							<?php
+								}
+							?>
+						</tr-->
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+	    <script src="js/bootstrap.min.js"></script>
+	    <script src="http://cdnjs.cloudflare.com/ajax/libs/waypoints/2.0.3/waypoints.min.js"></script>
+		<script>
+	      $(document).ready(function(){
+	        $(window).scroll(function(){
+	          if($(window).scrollTop()>200){
+	            $('.navbar').addClass('navbar-scroll');
+	          }
+	          else{
+	            $('.navbar').removeClass('navbar-scroll');
+	          }
+	        });
+	       });
+
+	      $(document).ready(function(){
+	        $(window).scroll(function(){
+	          if($(window).scrollTop()<250){
+	            $('.navbar').addClass('navbar-scroll-up');
+	          }
+	          else{
+	            $('.navbar').removeClass('navbar-scroll-up');
+	          }
+	        });
+	       });
+	    </script>
+	</body>
+</html>
